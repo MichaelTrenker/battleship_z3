@@ -72,9 +72,14 @@ while True:
 
     # Print the usage count for each cell
     print("Cell usage counts:")
+    total = 0
     for r in range(grid_size):
         for c in range(grid_size):
-            print(f"Cell ({r}, {c}): {(cell_usage_count[r][c]*100)/4}", end="  ")
+            total = total + cell_usage_count[r][c]
+    print(total)
+    for r in range(grid_size):
+        for c in range(grid_size):
+            print(f"Cell ({r}, {c}): {((cell_usage_count[r][c])/total):.3f}% ({cell_usage_count[r][c]})", end="  ")
             cell_usage_count[r][c] = 0
         print()
     x = int(input("Enter the X-Coordinate of you Shoot: "))
