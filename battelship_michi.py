@@ -95,8 +95,16 @@ while True:
     print(total)
     for r in range(grid_size):
         for c in range(grid_size):
-            if (r, c) in sure_cells:
-                 print(f"Cell ({r}, {c}): 100% ({cell_usage_count[r][c]})", end="  ")
+            if sure_cells:
+                if (r, c) in sure_cells:
+                    print(f"Cell ({r}, {c}): 100% ({cell_usage_count[r][c]})", end="  ")
+                elif cell_usage_count[r][c] == 2:
+                    print(f"Cell ({r}, {c}): 100% ({cell_usage_count[r][c]})", end="  ")
+                elif cell_usage_count[r][c] == 1:
+                    print(f"Cell ({r}, {c}): 50% ({cell_usage_count[r][c]})", end="  ")
+                else:
+                    print(f"Cell ({r}, {c}): {((cell_usage_count[r][c])/total):.3f}% ({cell_usage_count[r][c]})", end="  ")
+
             else:
                 print(f"Cell ({r}, {c}): {((cell_usage_count[r][c])/total):.3f}% ({cell_usage_count[r][c]})", end="  ")
             cell_usage_count[r][c] = 0
