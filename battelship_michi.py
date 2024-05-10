@@ -18,6 +18,14 @@ cell_usage_count = [[0 for _ in range(grid_size)] for _ in range(grid_size)]
 # Define deactivated cells - specify them as a set of (row, col) tuples
 # Example: deactivated_cells = {(1, 2), (3, 1)} means cells (1,2) and (3,1) are deactivated
 deactivated_cells = []
+sure_cells = []
+
+playground = [[0 for _ in range(grid_size)] for _ in range(grid_size)]
+
+playground[0][0] = 1
+playground[0][1] = 1
+playground[0][2] = 1
+
 while True:
     # Iterate over all possible positions in the grid
     for row in range(grid_size):
@@ -34,14 +42,18 @@ while True:
                 horizontal_constraints = [grid[row][c] for c in range(col, col + entity_size)]
                 solver.add(And(horizontal_constraints))
 
-                # Ensure no other cells are occupied and check deactivated cells
+                # Ensure no other cells are occupied, check deactivated and sure cells
+                valid_placement = True
                 for r in range(grid_size):
                     for c in range(grid_size):
                         if (r, c) in deactivated_cells or not (r == row and col <= c < col + entity_size):
                             solver.add(Not(grid[r][c]))
+                        if (r, c) in sure_cells:
+                            if not (r == row and col <= c < col + entity_size):
+                                valid_placement = False
 
-                # Check if this setup is possible
-                if solver.check() == sat:
+                # Check if this setup is possible and includes sure cells
+                if valid_placement and solver.check() == sat:
                     placement_count += 1
                     # Increment the usage count for each involved cell
                     for c in range(col, col + entity_size):
@@ -54,14 +66,18 @@ while True:
                 vertical_constraints = [grid[r][col] for r in range(row, row + entity_size)]
                 solver.add(And(vertical_constraints))
 
-                # Ensure no other cells are occupied and check deactivated cells
+                # Ensure no other cells are occupied, check deactivated and sure cells
+                valid_placement = True
                 for r in range(grid_size):
                     for c in range(grid_size):
                         if (r, c) in deactivated_cells or not (c == col and row <= r < row + entity_size):
                             solver.add(Not(grid[r][c]))
+                        if (r, c) in sure_cells:
+                            if not (c == col and row <= r < row + entity_size):
+                                valid_placement = False
 
-                # Check if this setup is possible
-                if solver.check() == sat:
+                # Check if this setup is possible and includes sure cells
+                if valid_placement and solver.check() == sat:
                     placement_count += 1
                     # Increment the usage count for each involved cell
                     for r in range(row, row + entity_size):
@@ -79,13 +95,20 @@ while True:
     print(total)
     for r in range(grid_size):
         for c in range(grid_size):
-            print(f"Cell ({r}, {c}): {((cell_usage_count[r][c])/total):.3f}% ({cell_usage_count[r][c]})", end="  ")
+            if (r, c) in sure_cells:
+                 print(f"Cell ({r}, {c}): 100% ({cell_usage_count[r][c]})", end="  ")
+            else:
+                print(f"Cell ({r}, {c}): {((cell_usage_count[r][c])/total):.3f}% ({cell_usage_count[r][c]})", end="  ")
             cell_usage_count[r][c] = 0
         print()
-    x = int(input("Enter the X-Coordinate of you Shoot: "))
+    x = int(input("Enter the first Coordinate of you Shoot: "))
 
     # Read second integer from user input
-    y = int(input("Enter the Y-Coordinate of you Shoot: "))
-    deactivated_cells.append((x,y))
+    y = int(input("Enter the second Coordinate of you Shoot: "))
+    print(playground[x][y])
+    if playground[x][y] == 1:
+        sure_cells.append((x,y))
+    else:
+        deactivated_cells.append((x,y))
     
 
