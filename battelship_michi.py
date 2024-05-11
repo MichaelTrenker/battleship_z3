@@ -23,6 +23,7 @@ def main():
     else:
         # If neither -real nor -debug are provided, print the help text
         parser.print_help()
+        exit()
 
 
     # Initialize the Z3 Solver
@@ -123,19 +124,15 @@ def main():
         for r in range(grid_size):
             for c in range(grid_size):           
                 if sure_cells:
-                    if (r, c) in sure_cells:
-                        print(f"Cell ({r}, {c}): 100% ({cell_usage_count[r][c]})", end="  ")
-                    elif cell_usage_count[r][c] == 2:
-                        print(f"Cell ({r}, {c}): 100% ({cell_usage_count[r][c]})", end="  ")
-                    elif cell_usage_count[r][c] == 1:
-                        print(f"Cell ({r}, {c}): 50% ({cell_usage_count[r][c]})", end="  ")
-                    else:
-                        print(f"Cell ({r}, {c}): {((cell_usage_count[r][c])/total):.3f}% ({cell_usage_count[r][c]})", end="  ")
-
+                    print(f"Cell ({r}, {c}): {((cell_usage_count[r][c])/cell_usage_count[sure_cells[0][0]][sure_cells[0][1]]):.3f}% ({cell_usage_count[r][c]})", end="  ")
                 else:
                     print(f"Cell ({r}, {c}): {((cell_usage_count[r][c])/total):.3f}% ({cell_usage_count[r][c]})", end="  ")
-                cell_usage_count[r][c] = 0
             print()
+
+
+        for r in range(grid_size):
+            for c in range(grid_size):   
+                cell_usage_count[r][c] = 0
         x = int(input("Enter the first Coordinate of you Shoot: "))
 
         # Read second integer from user input
@@ -143,7 +140,9 @@ def main():
         print(playground[x][y])
         if playground[x][y] == 1:
             sure_cells.append((x,y))
+            print("Wow you hit a ship!!!")
         else:
+            print("Miss ;(")
             deactivated_cells.append((x,y))
     
 
